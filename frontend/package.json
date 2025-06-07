@@ -1,0 +1,43 @@
+{
+    "name": "faq-management-system",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "start": "vite",
+        "docker:build": "docker build -t faq-management-system .",
+        "docker:run": "docker run -p 3000:3000 faq-management-system",
+        "docker:compose": "docker-compose up",
+        "docker:compose:build": "docker-compose up --build",
+        "docker:compose:down": "docker-compose down",
+        "server": "node server.js",
+        "test": "echo 'No test specified' && exit 0"
+    },
+    "dependencies": {
+        "@headlessui/react": "^1.7.14",
+        "@heroicons/react": "^2.0.18",
+        "@langchain/core": "^0.3.57",
+        "@reduxjs/toolkit": "^1.9.5",
+        "@sentry/react": "^9.26.0",
+        "axios": "^1.6.8",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-dropzone": "^14.2.3",
+        "react-redux": "^8.0.5",
+        "react-router-dom": "^6.22.3",
+        "react-toastify": "^9.1.3",
+        "recharts": "^2.12.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.29",
+        "@types/react": "^18.2.79",
+        "@types/react-dom": "^18.2.25",
+        "@vitejs/plugin-react": "^4.2.1",
+        "postcss": "^8.4.38",
+        "tailwindcss": "^3.4.3",
+        "typescript": "^5.4.5",
+        "vite": "^6.3.5"
+    }
+}
