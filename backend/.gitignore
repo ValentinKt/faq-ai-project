@@ -1,6 +1,10 @@
-# Operating System
+# Operating System Files
 .DS_Store
+.Spotlight-V100
+.Trashes
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Python
 __pycache__/
@@ -8,16 +12,28 @@ __pycache__/
 *.so
 *.egg
 *.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
 .env
 .venv/
 env/
 venv/
+ENV/
 .python-version
 
-# Python Build & Test
-build/
-dist/
+# Testing and Coverage
 .coverage
+coverage.xml
+nosetests.xml
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -26,47 +42,65 @@ pyrightconfig.json
 htmlcov/
 .tox/
 
-# IDEs
+# IDEs and Editors
 .idea/
 .vscode/
+*.swp
+*.swo
 *.sublime-*
 .project
 .pydevproject
 .settings/
+*.iml
+.classpath
 
-# Node.js
+# Node.js and Frontend
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .npm/
 .yarn/
+.pnp/
+.pnp.js
 package-lock.json
 yarn.lock
 
-# Frontend Build Outputs
+# Build and Distribution
 .next/
 dist/
 out/
 .nuxt/
 .cache/
+build/
+public/dist/
 
 # Logs and Databases
 *.log
+logs/
 *.sqlite3
 *.db
 *.rdb
+dump.rdb
 
-# Environment Variables
+# Environment and Configuration
 .env*
 .env.local
+.env.development
+.env.test
+.env.production
 .env.*.local
+config.local.js
 
-# Temporary Files
+# Temporary and Backup Files
 *.tmp
 *.temp
 *.bak
 *~
+*.swp
+*.swo
+.DS_Store?
+._*
 
 # Version Control
 *.orig
@@ -75,9 +109,11 @@ out/
 *.BASE.*
 *.LOCAL.*
 *.REMOTE.*
+.git/
+.hg/
+.svn/
 
 # Docker
+.docker/
 .dockignore
-
-# Uploads directory
-backend/uploads/
+docker-compose.override.yml
