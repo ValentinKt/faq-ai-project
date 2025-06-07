@@ -3,13 +3,13 @@ services:
   app:
     build: .
     ports:
-      - "8000:8000"
+      - "5000:5000"
     env_file:
       - .env
     depends_on:
       - db
       - redis
-    command: gunicorn app:app --bind 0.0.0.0:8000 --workers 4
+    command: gunicorn app:app --bind 0.0.0.0:5000 --workers 4
   db:
     image: postgres:14
     environment:

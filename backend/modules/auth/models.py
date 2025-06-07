@@ -34,7 +34,7 @@ class User(db.Model):
     last_name = Column(String(80), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    roles = relationship(UserRoleEnum, secondary=user_roles, back_populates="users")
+    roles = relationship("Role", secondary=user_roles, back_populates="users")
 
     def set_password(self, password: str) -> None:
         """Set the user's password with hashing."""

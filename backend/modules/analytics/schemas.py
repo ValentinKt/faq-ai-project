@@ -11,5 +11,5 @@ class FAQFeedbackSchema(Schema):
     faq_id = fields.UUID(required=True)
     user_id = fields.UUID(allow_none=True)
     is_helpful = fields.Boolean(required=True)
-    feedback_text = fields.Str(allow_none=True)
+    feedback_text = fields.Str(allow_none=True, validate=lambda s: len(s) <= 1000 if s else True)
     created_at = fields.DateTime(dump_only=True)

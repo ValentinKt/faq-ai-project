@@ -20,27 +20,32 @@ class AuthService:
     @staticmethod
     def register_user(data: Dict) -> Dict:
         """Register a new user with default role."""
-        with database_manager.session_scope() as session:
-            if session.query(User).filter_by(email=data['email']).first():
-                raise APIError("User with this email already exists", 409)
+        try:
+            with database_manager.session_scope() as session:
+                if session.query(User).filter_by(email=data['email']).first():
+                    raise APIError("User with this email already exists", 409)
 
-            user = User(
-                email=data['email'],
-                first_name=data['first_name'],
-                last_name=data['last_name']
-            )
-            user.set_password(data['password'])
+                user = User(
+                    email=data['email'],
+                    first_name=data['first_name'],
+                    last_name=data['last_name']
+                )
+                user.set_password(data['password'])
 
-            user_role = session.query(Role).filter_by(name=UserRoleEnum.USER).first()
-            if not user_role:
-                user_role = Role(name=UserRoleEnum.USER, description="Standard user")
-                session.add(user_role)
-            user.roles.append(user_role)
+                user_role = session.query(Role).filter_by(name=UserRoleEnum.USER).first()
+                if not user_role:
+                    user_role = Role(name=UserRoleEnum.USER, description="Standard user")
+                    session.add(user_role)
+                    session.flush()  # Ensure role ID is available
+                user.roles.append(user_role)
 
-            session.add(user)
-            session.flush()
-            logger.info(f"User registered: {user.email}")
-            return UserSchema().dump(user)
+                session.add(user)
+                session.flush()
+                logger.info(f"User registered: {user.email}")
+                return UserSchema().dump(user)
+        except Exception as e:
+            logger.error(f"Registration failed: {str(e)}")
+            raise APIError("Registration failed", 500)
 
     @staticmethod
     def login_user(data: Dict) -> str:
@@ -71,9 +76,14 @@ class AuthService:
     @staticmethod
     def seed_initial_roles() -> None:
         """Seed initial roles if they don't exist."""
-        with database_manager.session_scope() as session:
-            for role_data in INITIAL_ROLES:
-                if not session.query(Role).filter_by(name=role_data['name']).first():
-                    role = Role(name=role_data['name'], description=role_data['description'])
-                    session.add(role)
-            logger.info("Initial roles seeded")
+        try:
+            with database_manager.session_scope() as session:
+                for role_data in INITIAL_ROLES:
+                    if not session.query(Role).filter_by(name=role_data['name']).first():
+                        role = Role(name=role_data['name'], description=role_data['description'])
+                        session.add(role)
+                session.flush()
+                logger.info("Initial roles seeded")
+        except Exception as e:
+            logger.error(f"Role seeding failed: {str(e)}")
+            raise APIError("Role seeding failed", 500)

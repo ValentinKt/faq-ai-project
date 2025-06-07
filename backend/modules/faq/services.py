@@ -54,6 +54,8 @@ class FAQService:
             original = session.query(FAQEntry).get(faq_id)
             if not original:
                 return None
+            # Lock the row for update to avoid race conditions
+            session.refresh(original, with_for_update=True)
             new_faq = FAQEntry(
                 parent_id=original.id,
                 question=data.get('question', original.question),

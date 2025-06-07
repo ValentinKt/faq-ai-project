@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    gcc \   
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -38,10 +38,13 @@ ENV PATH=/root/.local/bin:$PATH \
 # Copy application code
 COPY . .
 
+# Create a non-root user and switch to it
+RUN useradd -m appuser && chown -R appuser /app
+USER appuser
+
 # Make entrypoint executable
 RUN chmod +x entrypoint.sh
-CMD [ "./entrypoint.sh" ]
-EXPOSE 5000
 
-# Entrypoint
+# Use only ENTRYPOINT
 ENTRYPOINT ["./entrypoint.sh"]
+EXPOSE 5000
