@@ -15,18 +15,18 @@ logger = logging.getLogger(__name__)
 
 class DocumentService:
     """Service for document upload and processing"""
-    
+
     @staticmethod
     def upload_document(file: FileStorage, user_id: UUID) -> Dict:
-        """Upload and process a document"""
         try:
-            # Save file to uploads directory
-            filename = file.filename
+            if not file or not file.filename:
+                raise APIError("No file provided", 400)
+            filename = os.path.basename(file.filename)
+            if not filename or '..' in filename or filename.startswith('.'):
+                raise APIError("Invalid filename", 400)
             filepath = os.path.join(settings.UPLOAD_FOLDER, filename)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             file.save(filepath)
-            
-            # Create document record
             with database_manager.session_scope() as session:
                 document = Document(
                     filename=filename,
@@ -36,35 +36,28 @@ class DocumentService:
                 )
                 session.add(document)
                 session.flush()
-                
-                # Start background processing
                 Thread(
-                    target=DocumentService.process_document, 
-                    args=(document.id,)
+                    target=DocumentService.process_document,
+                    args=(document.id,),
+                    daemon=True
                 ).start()
-                
                 return DocumentSchema().dump(document)
+        except APIError:
+            raise
         except Exception as e:
             logger.error(f"Document upload failed: {str(e)}")
-            raise
+            raise APIError("Document upload failed", 500)
 
     @staticmethod
     def process_document(document_id: UUID):
-        """Process document content in background"""
         try:
             with database_manager.session_scope() as session:
                 document = session.query(Document).get(document_id)
                 if not document:
                     logger.error(f"Document not found: {document_id}")
                     return
-                
-                # Simulate text extraction (real implementation would use PyMuPDF)
                 text = f"Content extracted from {document.filename}"
-                
-                # Store embedding in vector database
                 AIService().store_document_embedding(document.id, text)
-                
-                # Update document status
                 document.status = "processed"
                 document.processed_at = func.now()
                 logger.info(f"Processed document: {document_id}")
@@ -77,7 +70,10 @@ class DocumentService:
 
     @staticmethod
     def get_all_documents() -> list:
-        """Retrieve all documents"""
-        with database_manager.session_scope() as session:
-            documents = session.query(Document).all()
-            return DocumentSchema(many=True).dump(documents)
+        try:
+            with database_manager.session_scope() as session:
+                documents = session.query(Document).all()
+                return DocumentSchema(many=True).dump(documents)
+        except Exception as e:
+            logger.error(f"Failed to retrieve documents: {str(e)}")
+            raise APIError("Failed to retrieve documents", 500)

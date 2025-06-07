@@ -11,11 +11,12 @@ def validate_request(schema):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             data = request.get_json() or {}
-            result = schema().load(data)
-            if result.errors:
-                logger.error(f"Validation errors: {result.errors}")
-                raise APIError(f"Validation errors: {result.errors}", 400)
-            request.validated_data = result.data
+            try:
+                result = schema().load(data)
+            except Exception as e:
+                logger.error(f"Validation errors: {str(e)}")
+                raise APIError(f"Validation errors: {str(e)}", 400)
+            request.validated_data = result
             return f(*args, **kwargs)
         return decorated_function
     return decorator
